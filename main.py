@@ -77,14 +77,14 @@ algorand.send.payment(
 )
 
 
-#2 Optin to the asset
+#2 Optin to the asset 
 
-algorand.send.asset_opt_in(
-    AssetOptInParams(
-        sender=receiver_acct.address,
-        asset_id=asset_id
-    )
-)
+# algorand.send.asset_opt_in(
+#     AssetOptInParams(
+#         sender=receiver_acct.address,
+#         asset_id=asset_id
+#     )
+# )
 
 
 print(algorand.account.get_information(receiver_acct.address))
@@ -92,6 +92,13 @@ print(algorand.account.get_information(receiver_acct.address))
 #Atomic transfer
 
 group_tx = algorand.new_group()
+
+group_tx.add_asset_opt_in(
+    AssetOptInParams(
+        sender=receiver_acct.address,
+        asset_id=asset_id
+    )
+)
 
 group_tx.add_payment(
     PayParams(
