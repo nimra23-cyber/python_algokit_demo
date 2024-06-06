@@ -4,6 +4,8 @@ from algokit_utils.beta.algorand_client import (
     AssetOptInParams,
     AssetTransferParams,
     PayParams,
+    AssetFreezeParams,
+
 )
 
 # Client to connect to localnet
@@ -144,3 +146,6 @@ print("Receiver Account Asset Balance:",algorand.account.get_information(receive
 
 # Print the remaining balance of the creator account after the transactions
 print("Creator Account Balance:", algorand.account.get_information(creator.address)['amount'])
+
+#-------------------------------------------------------
+# Challenge ideas (Freeze & Clawback)
