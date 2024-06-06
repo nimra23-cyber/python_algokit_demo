@@ -38,8 +38,10 @@ sent_txn = algorand.send.asset_create(
         sender=creator.address,
         total= 1000,
         asset_name="nameofasset",
-        unit_name="NOA"
-        
+        unit_name="NOA",
+        manager=creator.address,
+        clawback=creator.address,
+        freeze=creator.address
     )
 )
 
