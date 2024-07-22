@@ -55,44 +55,6 @@ print("Asset ID: ", asset_id)
 receiver_acct = algorand.account.random()
 print("Receiver Account: ", receiver_acct.address)
 
-# showcase error whithout opt-in
-
-'''
-asset_transfer = algorand.send.asset_transfer(
-    AssetTransferParams(
-        sender=creator.address,
-        receiver=receiver_acct.address,
-        asset_id=asset_id,
-        amount=10
-    )
-) 
-'''
-
-#----------------------------------------------------------
-# Opt-in segment without atomic transfer
-
-# 1 Fund receiver account
-# algorand.send.payment(
-#     PayParams(
-#         sender=dispenser.address,
-#         receiver=receiver_acct.address,
-#         amount=10_000_000
-#     )
-# )
-
-
-# 2 Optin to the asset 
-# algorand.send.asset_opt_in(
-#     AssetOptInParams(
-#         sender=receiver_acct.address,
-#         asset_id=asset_id
-#     )
-# )
-
-# 3 Transfer the asset (Code above)
-# ---------------------------------------------------------
-
-
 # Fund receiver account
 algorand.send.payment(
     PayParams(
@@ -112,7 +74,7 @@ group_tx = algorand.new_group()
 # Add an asset opt-in transaction to the group
 group_tx.add_asset_opt_in(
     AssetOptInParams(
-        sender=receiver_acct.address,  # The receiver's account opting in to the asset
+        sender=receiver_acct.address, 
         asset_id=asset_id               # The ID of the asset to opt in to
     )
 )
@@ -120,9 +82,9 @@ group_tx.add_asset_opt_in(
 # Add a payment transaction to the group
 group_tx.add_payment(
     PayParams(
-        sender=receiver_acct.address,   # The sender of the payment (receiver account)
-        receiver=creator.address,       # The receiver of the payment (creator account)
-        amount=1_000_000                # The amount to be paid (in microAlgos) = 1 algo
+        sender=receiver_acct.address,  
+        receiver=creator.address,       
+        amount=1_000_000               
     ))
 
 # Add an asset transfer transaction to the group
@@ -148,4 +110,66 @@ print("Receiver Account Asset Balance:",algorand.account.get_information(receive
 print("Creator Account Balance:", algorand.account.get_information(creator.address)['amount'])
 
 #-------------------------------------------------------
-# Challenge ideas (Freeze & Clawback)
+# Additional Information (Freeze & Clawback)
+
+# Freeze
+
+algorand.send.asset_freeze(
+    AssetFreezeParams(
+        sender=creator.address,
+        asset_id=asset_id,
+        account=receiver_acct.address,
+        frozen= True
+    )
+)
+
+# Test freeze error
+""" algorand.send.asset_transfer(
+    AssetTransferParams(
+            sender=receiver_acct.address,
+            receiver=creator.address,
+            asset_id=asset_id,
+            amount=2
+        )
+)
+ """
+
+# UnFreeze
+
+algorand.send.asset_freeze(
+    AssetFreezeParams(
+        sender=creator.address,
+        asset_id=asset_id,
+        account=receiver_acct.address,
+        frozen= False
+    )
+)
+
+# Send asset
+
+algorand.send.asset_transfer(
+    AssetTransferParams(
+            sender=receiver_acct.address,
+            receiver=creator.address,
+            asset_id=asset_id,
+            amount=2
+        )
+)
+
+
+print(algorand.account.get_information(receiver_acct.address)['assets'][0]['amount'])
+
+# Clawback
+
+algorand.send.asset_transfer(
+    AssetTransferParams(
+            sender= creator.address,
+            receiver= creator.address,
+            asset_id=asset_id,
+            amount=2,
+            clawback_target= receiver_acct.address
+        )
+)
+
+print(algorand.account.get_information(receiver_acct.address)['assets'][0]['amount'])
+
